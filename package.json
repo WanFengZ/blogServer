@@ -1,0 +1,25 @@
+{
+  "name": "blogserver",
+  "version": "1.0.0",
+  "description": "node.js 入门学习的一个建议博客服务端",
+  "main": "bin/www.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=dev nodemon ./bin/www.js",
+    "prd": "cross-env NODE_ENV=production nodemon ./bin/www.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WanFengZ/blogServer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WanFengZ/blogServer/issues"
+  },
+  "homepage": "https://github.com/WanFengZ/blogServer#readme",
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "nodemon": "^1.19.1"
+  }
+}
