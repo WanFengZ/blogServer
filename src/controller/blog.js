@@ -18,6 +18,17 @@ const getList = (author, keyword) => {
     ]
 }
 
+const getDetail = (id) => {
+    return {
+        id: 2,
+        title: '标题B',
+        content: '内容B',
+        createTime: 1563453157167,
+        author: '李四'
+    }
+}
+
 module.exports = {
-    getList
+    getList,
+    getDetail
 }
