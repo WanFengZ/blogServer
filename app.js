@@ -1,7 +1,9 @@
 const querystring = require('querystring')
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
-const SESSION_DATA = {}
+const { set, get } = require('./src/db/redis')
+
+// const SESSION_DATA = {}
 
 const getCookieExpires = () => {
     const d = new Date()
@@ -59,21 +61,42 @@ const serverHandle = (req, res) => {
         const val = arr[1].trim()
         req.cookie[key] = val
     })
-    //解析section
+    //解析session
+    // let needSetCookie = false
+    // let sessionId = req.cookie.sessionid
+    // if (sessionId) {
+    //     if(!SESSION_DATA[sessionId]) {
+    //         SESSION_DATA[sessionId] = {}
+    //     }
+    // } else {
+    //     needSetCookie = true
+    //     sessionId = `${Date.now()}_${Math.random()}`
+    //     SESSION_DATA[sessionId] = {}
+    // }
+    // req.session = SESSION_DATA[sessionId]
+
+    // 解析session redis
     let needSetCookie = false
     let sessionId = req.cookie.sessionid
-    if (sessionId) {
-        if(!SESSION_DATA[sessionId]) {
-            SESSION_DATA[sessionId] = {}
-        }
-    } else {
+    if (!sessionId) {
         needSetCookie = true
         sessionId = `${Date.now()}_${Math.random()}`
-        SESSION_DATA[sessionId] = {}
+        set(sessionId, {})
     }
-    req.session = SESSION_DATA[sessionId]
-    //处理post数据
-    handlePostData(req).then((postData) => {
+    req.sessionId = sessionId
+    get(req.sessionId).then(sessionData => {
+        if (sessionData == null) {
+            // 初始化 redis 中的 session 值
+            set(req.sessionId, {})
+            // 设置 session
+            req.session = {}
+        } else {
+            // 设置 session
+            req.session = sessionData
+        }
+        // 处理 post data
+        return handlePostData(req)
+    }).then((postData) => {
         //储存post数据
         req.body = postData
         //处理blog路由
