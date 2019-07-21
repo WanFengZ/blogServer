@@ -1,32 +1,49 @@
-const { getList, getDetail } = require('../controller/blog.js')
+const { getList, getDetail, newBlog, updateBlog, delBlog } = require('../controller/blog.js')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 
 const handleBlogRouter = (req, res) => {
     const method = req.method
     const path = req.path
+    const id = req.query.id
     //获取博客列表
     if (method === 'GET' && path === '/api/blog/list') {
         const author = req.query.author || ''
-        const keyword = req.query.author || ''
-        const listData = getList(author, keyword)
-        return new SuccessModel(listData)
+        const keyword = req.query.keyword || ''
+        const result = getList(author, keyword)
+        return result.then((listData) => {
+            return new SuccessModel(listData)
+        })
     }
     // 获取博客详情
     if (method === 'GET' && path === '/api/blog/detail') {
-        const id = req.query.id
-        const data = getDetail(id)
-        return new SuccessModel(data)
+        const result = getDetail(id)
+        return result.then((data) => {
+            return new SuccessModel(data)
+        })
     }
     //新建一篇博客
-    if (method === 'POST' && path === 'api/blog/new') {
-        return {
-            msg: '这是新建博客的接口'
-        }
+    if (method === 'POST' && path === '/api/blog/new') {
+        req.body.author = '张三'
+        const result = newBlog(req.body)
+        return result.then((data) => {
+            return new SuccessModel(data)
+        })
     }
     //更新一篇博客
-    if (method === 'POST' && path ==='api/blog/update') {
-        return {
-            msg: '这是更新博客的接口'
+    if (method === 'POST' && path ==='/api/blog/update') {
+        const result = updateBlog(id, req.body)
+        if (result) {
+            return new SuccessModel()
+        } else {
+            return new ErrorModel('更新博客失败')
+        }
+    }
+    if (method === 'POST' && path === '/api/blog/del') {
+        const result = delBlog(id)
+        if (result) {
+            return new SuccessModel()
+        } else {
+            return new ErrorModel('删除博客失败')
         }
     }
 }
