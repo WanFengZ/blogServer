@@ -1,4 +1,5 @@
 const { login } =require('../controller/user')
+const { set } = require('../db/redis')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 
 
@@ -12,8 +13,10 @@ const handleUserRouter = (req, res) => {
         const result = login(username, password)
         return result.then((data) => {
             if (data.username) {
-                req.session.userName = data.username
-                req.session.realName = data.realname
+
+                req.session.username = data.username
+                req.session.realname = data.realname
+                set(req.cookie.sessionid, req.session)
                 return new SuccessModel(data)
             } else {
                 return new ErrorModel('登陆失败')
